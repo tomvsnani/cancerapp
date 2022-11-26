@@ -4,10 +4,73 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import {createBrowserRouter,RouterProvider,Route} from 'react-router-dom'
+
+
+
+import {Provider} from 'react-redux'
+
+
+
+import store from './reduxStore'
+import HomePage from './HomePage';
+import IndividualComponent, { Diagnosis } from './individualComponent';
+import { TreatmentPlan } from './Treatmentplan';
+import { MedicalRecords } from './medicalRecord';
+import { Diet } from './diet';
+
+
+
+
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+
+
+const router=createBrowserRouter([{
+  path:'/',
+  element:<App></App>
+},{
+  path:'homepage',
+  element:<HomePage></HomePage>,
+  // children:[{
+  //   path:'individual',
+  //   element:<IndividualComponent></IndividualComponent>
+  // }]
+},{
+  path:'/individual',
+  element:<IndividualComponent></IndividualComponent>,
+  children:[{
+    index:true,
+    element:<Diagnosis></Diagnosis>
+  },{
+    path:'Treatment Plan',
+    element:<TreatmentPlan></TreatmentPlan>
+  }
+  ,{
+    path:'Medical Record',
+    element:<MedicalRecords></MedicalRecords>
+  }
+  ,{
+    path:'Diet',
+    element:<Diet></Diet>
+  }
+  ,{
+    path:'Diagnosis',
+    element:<Diagnosis></Diagnosis>
+  }
+
+]
+}
+
+
+])
+
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+    <RouterProvider router={router}></RouterProvider>
+    </Provider>
   </React.StrictMode>
 );
 
