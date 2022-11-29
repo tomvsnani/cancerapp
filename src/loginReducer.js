@@ -5,20 +5,28 @@ export const loginSlice = createSlice({
   initialState: {
     isInLoginPage: true,
     errorMessage: '',
+    user:{
+      
+      
+    }
   },
   reducers: {
     error: (state, errorMessage) => {
-        console.log("errormessagereducer"+JSON.stringify(errorMessage))
+       
       state.errorMessage = errorMessage.payload;
     },
     toggleLoginRegister: (state, isInLoginPage) => {
 
-         console.log("isInLoginPage"+JSON.stringify(isInLoginPage))
+       
       state.isInLoginPage = isInLoginPage.payload;
     },
+    setUserDetails:(state,user)=>{
+      console.log(user.payload)
+      state.user=user.payload
+    }
   },
 });
 
-export const {error , toggleLoginRegister} = loginSlice.actions
+export const {error , toggleLoginRegister , setUserDetails} = loginSlice.actions
 
 export default loginSlice.reducer

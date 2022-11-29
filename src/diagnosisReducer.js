@@ -4,34 +4,26 @@ export const diagnosisSlice = createSlice({
   name: "diagnosis",
   initialState: {
     diagnosisArray: [
-      {
-        name: "Bone Cancer",
-        stage: "1",
-        date: "12-16-1992",
-      },
-      {
-        name: "Skin Cancer",
-        stage: "1",
-        date: "12-16-1992",
-      },
-      {
-        name: "Feet Cancer",
-        stage: "2",
-        date: "12-16-1992",
-      },
+     
     ],
     activeMenu:'Diagnosis'
   },
   reducers: {
     createDiagnosis: (state, createDiagnosis) => {
+      console.log('diagnosisarrayreducer '+JSON.stringify(createDiagnosis.payload))
       state.diagnosisArray.push(createDiagnosis.payload);
     },
     changeMenu:(state,activePlan)=>{
       state.activeMenu=activePlan.payload
+    },
+    clearArray:(state)=>{
+      state.diagnosisArray.forEach(()=>{
+        state.diagnosisArray.pop()
+      })
     }
   },
 });
 
 export default diagnosisSlice.reducer
 
-export const {createDiagnosis,changeMenu} = diagnosisSlice.actions
+export const {createDiagnosis,changeMenu,clearArray} = diagnosisSlice.actions

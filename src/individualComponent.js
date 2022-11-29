@@ -2,42 +2,53 @@ import { Fragment, useEffect } from "react";
 import { Outlet, Link } from "react-router-dom";
 
 import homePageArray from "./utilities";
-import {useDispatch , useSelector} from 'react-redux'
+import { useDispatch, useSelector } from "react-redux";
 
-import {createDiagnosis,changeMenu} from './diagnosisReducer'
+import { createDiagnosis, changeMenu, clearArray } from "./diagnosisReducer";
 
-import {useNavigate} from 'react-router-dom'
-
-
+import { useNavigate } from "react-router-dom";
 
 export function Diagnosis() {
-  
-    const dispatch=useDispatch()
 
-    const {diagnosisArray,activeMenu} =useSelector(state=>state.diagnosis)
+  const dispatch = useDispatch();
 
-  
+  var { diagnosisArray } = useSelector((state) => state.diagnosis);
+
+  const {user} =useSelector((state)=>state.login)
+
+  useEffect(()=>{
+
+    
+    fetchDiagnosis(user,dispatch);
+
+    return (()=>{
+        console.log("clearing data")
+        dispatch(clearArray())
+    })
+
+  },[])
 
   return (
     <div className="row g-5">
-      <div className="col-1"></div>
-      <div className="col">
+      <div className="col col-md-6">
         <h4 className="text-center">Your Diagnosis</h4>
 
         {diagnosisArray.map((value) => {
+        
           return (
-            <div className="card p-2 my-4" key={value.name }>
+            <div className="card p-2 my-4" key={value._id}>
               <div className="card-body">
-                <p className="card-title fw-bold h4">{value.name}    <span className="small ms-3 fw-normal">{value.date}</span></p>
-                <p className="card-text">
-                  stage : {value.stage}
+                <p className="card-title fw-bold ">
+                  {value.name}{" "}
+                  <span className="small ms-3 fw-normal">{value.date}</span>
                 </p>
+                <p className="card-text">stage : {value.stage}</p>
               </div>
             </div>
           );
         })}
       </div>
-      <div className="col">
+      <div className="col col-md-5">
         <h4 className="text-center">Create new Diagnosis</h4>
 
         <form
@@ -45,20 +56,39 @@ export function Diagnosis() {
           onSubmit={(e) => {
             e.preventDefault();
 
-           var name=document.getElementsByName('diagnosisInput')[0].value;
-           var stage=document.getElementsByName('stageInput')[0].value;
-           var date=document.getElementsByName('dateInput')[0].value;
+            var name = document.getElementsByName("diagnosisInput")[0].value;
+            var stage = document.getElementsByName("stageInput")[0].value;
+            var date = document.getElementsByName("dateInput")[0].value;
 
-           
-           (name.length>0 && stage.length>0 && date.length>0) ?
+            name.length > 0 && stage.length > 0 && date.length > 0
+              ? 
+              fetch("http://localhost:8080/createDiagnosis", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    name: name,
+                    stage: stage,
+                    date: date,
+                    user_id:user['_id']
+                  }),
 
-            dispatch(createDiagnosis({
-                'name':name,
-                'stage':stage,
-                'date':date
-               
-            })):alert("please enter all the fields")
-            
+                  headers: { "Content-Type": "application/json" },
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    if (data && data.code == "1")
+                    {console.log(data)
+                      dispatch(
+                        createDiagnosis({
+                          name: name,
+                          stage: stage,
+                          date: date,
+                          user_id:user['_id'],
+                          _id:data.data.insertedId
+                        })
+                      );}
+                    else alert(data.message);
+                  })
+              : alert("please enter all the fields");
           }}
         >
           <input
@@ -66,19 +96,25 @@ export function Diagnosis() {
             type="text"
             placeholder="Enter Diagnosis name"
             className="m-2 p-2 rounded-2"
+            style={{ border: "none" }}
           />
           <input
             name="stageInput"
             type="number"
             placeholder="Enter stage of the diagnosis"
             className="m-2 p-2 rounded-2"
+            style={{ border: "none" }}
           />
-          <input name="dateInput" type="date" className="m-2 p-2 rounded-2" />
+          <input
+            name="dateInput"
+            type="date"
+            className="m-2 p-2 rounded-2"
+            style={{ border: "none" }}
+          />
           <button
             type="submit"
             className="btn btn-lg btn-info text-white my-2 align-self-center"
           >
-          
             Create Diagnosis
           </button>
         </form>
@@ -87,34 +123,63 @@ export function Diagnosis() {
   );
 }
 
+function fetchDiagnosis(user,dispatch) {
+
+    console.log('individual did mount' );
+
+    if(user['_id'])
+
+    fetch(`http://localhost:8080/getDiagnosis/${user['_id']}`, {
+        method: "GET",
+
+
+        headers: { "Content-Type": "application/json" },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+           
+            if (data && data.code == "1") {
+                console.log(data);
+
+                dispatch(clearArray())
+
+
+                data.data.forEach((value) => {
+
+                    
+                    dispatch(
+
+                        createDiagnosis(value)
+                    );
+                });
+
+            }
+            else
+                alert(data.message);
+        });
+}
+
 export default function IndividualComponent() {
+  const navigate = useNavigate();
 
-    const navigate=useNavigate()
+  const dispatch = useDispatch();
 
-    const dispatch=useDispatch()
-
-    const {activeMenu} =useSelector(state=>state.diagnosis)
-
-   
-
-    // useEffect(()=>{
-    //     navigate(`${activeMenu}`)
-    // })
+  const { activeMenu } = useSelector((state) => state.diagnosis);
 
   return (
-    <div className="row sidebar " style={{ 'height': "100vh" ,width:'100vw'}}>
-      <div className="col p-4">
-       
+    <div className="row sidebar " style={{ height: "100vh", width: "100vw" }}>
+      <div className="col-12 col-md-2 p-4">
         {homePageArray.map((value, index) => {
           return (
             <Fragment key={value.title}>
-                 {console.log(activeMenu+'  '+value.title)}
               <div
-                className={"col-md-2  rounded-3 d-flex  justify-content-start align-items-center ".concat( value.title===activeMenu?'text-success':'text-secondary')}
+                className={" rounded-3 d-flex  justify-content-start align-items-center ".concat(
+                  value.title === activeMenu ? "text-primary" : ""
+                )}
                 style={{ cursor: "pointer" }}
-                onClick={()=>{
-                    dispatch(changeMenu(value.title))
-                    navigate(`${value.title}`)
+                onClick={() => {
+                  dispatch(changeMenu(value.title));
+                  navigate(`${value.title}`);
                 }}
               >
                 <img
@@ -130,7 +195,7 @@ export default function IndividualComponent() {
           );
         })}
       </div>
-      <div className="col-md-10 p-4" style={{ backgroundColor: "#F3EFE0" }}>
+      <div className="  col p-4" style={{ backgroundColor: "#F3EFE0" }}>
         <Outlet></Outlet>
       </div>
     </div>

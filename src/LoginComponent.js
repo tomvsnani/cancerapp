@@ -3,7 +3,7 @@ export default function Login({
   loginSubmitClicked,
   isInLoginPage,
   toggleLoginRegister,
-  errormessage
+  errormessage,username,password,fullname,email
 }) {
   // console.log("rendered login");
   // console.log(errormessage+" , "+JSON.stringify(isInLoginPage))
@@ -24,6 +24,8 @@ export default function Login({
         <input
         name="username"
           type="text"
+          id="username"
+          value={username}
           placeholder="Enter your username"
           className="p-3 my-2"
           onChange={elementsChanged}
@@ -33,6 +35,8 @@ export default function Login({
             <input
               type="text"
               name="fullname"
+              id="fullname"
+              value={fullname}
               placeholder="Enter your FullName"
               className="p-3 my-2"
               onChange={elementsChanged}
@@ -41,6 +45,8 @@ export default function Login({
             <input
              name="email"
               type="email"
+              id="email"
+              value={email}
               placeholder="Enter your Email"
               className="p-3 my-2"
               onChange={elementsChanged}
@@ -50,6 +56,8 @@ export default function Login({
         <input
          name="password"
           type="password"
+          id="password"
+          value={password}
           placeholder="Enter your password"
           className="p-3 my-2"
           onChange={elementsChanged}
