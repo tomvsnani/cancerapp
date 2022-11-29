@@ -73,6 +73,7 @@ function App() {
       JSON.stringify({username:username,
         password:password,
         email:email,
+        
         fullname:fullname
       })
       
