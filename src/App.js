@@ -44,7 +44,7 @@ function App() {
 
     if(isInLoginPage)
 
-   fetch('http://aki-pinky-backend.herokuapp.com/login',{
+   fetch('https://aki-pinky-backend.herokuapp.com/login',{
     method:'POST',
     body:
       JSON.stringify({username:username,
@@ -67,13 +67,13 @@ function App() {
 
    {
 
-    fetch('http://aki-pinky-backend.herokuapp.com/signup',{
+    fetch('https://aki-pinky-backend.herokuapp.com/signup',{
     method:'POST',
     body:
       JSON.stringify({username:username,
         password:password,
         email:email,
-        
+
         fullname:fullname
       })
       

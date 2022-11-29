@@ -62,7 +62,7 @@ export function Diagnosis() {
 
             name.length > 0 && stage.length > 0 && date.length > 0
               ? 
-              fetch("http://localhost:8080/createDiagnosis", {
+              fetch("https://mobile-akki-pinky.herokuapp.com/createDiagnosis", {
                   method: "POST",
                   body: JSON.stringify({
                     name: name,
@@ -129,7 +129,7 @@ function fetchDiagnosis(user,dispatch) {
 
     if(user['_id'])
 
-    fetch(`http://localhost:8080/getDiagnosis/${user['_id']}`, {
+    fetch(`https://mobile-akki-pinky.herokuapp.com/getDiagnosis/${user['_id']}`, {
         method: "GET",
 
 
