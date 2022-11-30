@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { Outlet, Link } from "react-router-dom";
 
 import homePageArray from "./utilities";
@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createDiagnosis, changeMenu, clearArray } from "./diagnosisReducer";
 
 import { useNavigate } from "react-router-dom";
+import { setUserDetails } from "./loginReducer";
 
 export function Diagnosis() {
 
@@ -16,22 +17,86 @@ export function Diagnosis() {
 
   const {user} =useSelector((state)=>state.login)
 
+ 
+
   useEffect(()=>{
 
     
-    fetchDiagnosis(user,dispatch);
+
+   
+
+    console.log(user)
+
+    let network = true
+    
+
+    
+
+    console.log('individual did mount' );
+
+    if(user['_id'])
+
+    fetch(`https://aki-pinky-backend.herokuapp.com/getDiagnosis/${user['_id']}`, {
+        method: "GET",
+
+
+        headers: { "Content-Type": "application/json" },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+           
+            if (data && data.code == "1") {
+                console.log(data);
+
+              
+
+                console.log(diagnosisArray)
+
+                console.log(network)
+
+                if(network){
+
+                    dispatch(clearArray())
+                data.data.forEach((value) => {
+
+                    
+                    dispatch(
+
+                        createDiagnosis(value)
+                    );
+                });
+
+            }
+
+            }
+            else
+                alert(data.message);
+        });
+
+    
 
     return (()=>{
-        console.log("clearing data")
+
         dispatch(clearArray())
+
+        network=false
+
+        console.log(network)
     })
 
-  },[])
+     
+
+  },[user['_id']])
 
   return (
     <div className="row g-5">
       <div className="col col-md-6">
         <h4 className="text-center">Your Diagnosis</h4>
+
+        {
+        console.log("in rendering array ")  }
+        {console.log(diagnosisArray)
+        }
 
         {diagnosisArray.map((value) => {
         
@@ -76,8 +141,10 @@ export function Diagnosis() {
                   .then((response) => response.json())
                   .then((data) => {
                     if (data && data.code == "1")
-                    {console.log(data)
+                    {
+                        console.log(data)
                       dispatch(
+                        
                         createDiagnosis({
                           name: name,
                           stage: stage,
@@ -85,6 +152,8 @@ export function Diagnosis() {
                           user_id:user['_id'],
                           _id:data.data.insertedId
                         })
+
+
                       );}
                     else alert(data.message);
                   })
@@ -123,41 +192,7 @@ export function Diagnosis() {
   );
 }
 
-function fetchDiagnosis(user,dispatch) {
 
-    console.log('individual did mount' );
-
-    if(user['_id'])
-
-    fetch(`https://aki-pinky-backend.herokuapp.com/getDiagnosis/${user['_id']}`, {
-        method: "GET",
-
-
-        headers: { "Content-Type": "application/json" },
-    })
-        .then((response) => response.json())
-        .then((data) => {
-           
-            if (data && data.code == "1") {
-                console.log(data);
-
-                dispatch(clearArray())
-
-
-                data.data.forEach((value) => {
-
-                    
-                    dispatch(
-
-                        createDiagnosis(value)
-                    );
-                });
-
-            }
-            else
-                alert(data.message);
-        });
-}
 
 export default function IndividualComponent() {
   const navigate = useNavigate();

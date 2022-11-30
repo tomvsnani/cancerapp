@@ -17,9 +17,7 @@ export const diagnosisSlice = createSlice({
       state.activeMenu=activePlan.payload
     },
     clearArray:(state)=>{
-      state.diagnosisArray.forEach(()=>{
-        state.diagnosisArray.pop()
-      })
+      state.diagnosisArray=[]
     }
   },
 });
