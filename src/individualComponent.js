@@ -4,105 +4,100 @@ import { Outlet, Link } from "react-router-dom";
 import homePageArray from "./utilities";
 import { useDispatch, useSelector } from "react-redux";
 
-import { createDiagnosis, changeMenu, clearArray } from "./diagnosisReducer";
+import { createDiagnosis, changeMenu, clearArray, deleteById } from "./diagnosisReducer";
 
 import { useNavigate } from "react-router-dom";
 import { setUserDetails } from "./loginReducer";
 
 export function Diagnosis() {
-
   const dispatch = useDispatch();
 
   var { diagnosisArray } = useSelector((state) => state.diagnosis);
 
-  const {user} =useSelector((state)=>state.login)
+  const { user } = useSelector((state) => state.login);
 
- 
+  useEffect(() => {
+    console.log(user);
 
-  useEffect(()=>{
+    let network = true;
 
-    
+    console.log("individual did mount");
 
-   
+    if (user["_id"])
+      fetch(
+        `https://aki-pinky-backend.herokuapp.com/getDiagnosis/${user["_id"]}`,
+        {
+          method: "GET",
 
-    console.log(user)
-
-    let network = true
-    
-
-    
-
-    console.log('individual did mount' );
-
-    if(user['_id'])
-
-    fetch(`https://aki-pinky-backend.herokuapp.com/getDiagnosis/${user['_id']}`, {
-        method: "GET",
-
-
-        headers: { "Content-Type": "application/json" },
-    })
+          headers: { "Content-Type": "application/json" },
+        }
+      )
         .then((response) => response.json())
         .then((data) => {
-           
-            if (data && data.code == "1") {
-                console.log(data);
+          if (data && data.code == "1") {
+            console.log(data);
 
-              
+            console.log(diagnosisArray);
 
-                console.log(diagnosisArray)
+            console.log(network);
 
-                console.log(network)
-
-                if(network){
-
-                    dispatch(clearArray())
-                data.data.forEach((value) => {
-
-                    
-                    dispatch(
-
-                        createDiagnosis(value)
-                    );
-                });
-
+            if (network) {
+              dispatch(clearArray());
+              data.data.forEach((value) => {
+                dispatch(createDiagnosis(value));
+              });
             }
-
-            }
-            else
-                alert(data.message);
+          } else alert(data.message);
         });
 
-    
+    return () => {
+      dispatch(clearArray());
 
-    return (()=>{
+      network = false;
 
-        dispatch(clearArray())
-
-        network=false
-
-        console.log(network)
-    })
-
-     
-
-  },[user['_id']])
+      console.log(network);
+    };
+  }, [user["_id"]]);
 
   return (
     <div className="row g-5">
       <div className="col col-md-6">
         <h4 className="text-center">Your Diagnosis</h4>
 
-        {
-        console.log("in rendering array ")  }
-        {console.log(diagnosisArray)
-        }
+        {console.log("in rendering array ")}
+        {console.log(diagnosisArray)}
 
         {diagnosisArray.map((value) => {
-        
           return (
             <div className="card p-2 my-4" key={value._id}>
-              <div className="card-body">
+              <div className="card-body ">
+                <a href="#">
+                  <p
+                    className="fw-bold h5 text-black"
+                    style={{ float: "right" }}
+                    onClick={()=>fetch(
+                      "https://aki-pinky-backend.herokuapp.com/deleteDiagnosis/" + value._id,
+                      {
+                        method: "DELETE",
+                      }
+                    )
+                      .then((response) => response.json())
+                      .then((data) => {
+                        if (data && data.code == 1) {
+
+                            console.log('deleted successfully')
+
+                            dispatch(deleteById(value._id))
+                        }
+                      }).catch(err=>{
+                        console.log(err)
+                      })
+                    
+                    }
+                  >
+                    x
+                  </p>
+                </a>
                 <p className="card-title fw-bold ">
                   {value.name}{" "}
                   <span className="small ms-3 fw-normal">{value.date}</span>
@@ -126,36 +121,34 @@ export function Diagnosis() {
             var date = document.getElementsByName("dateInput")[0].value;
 
             name.length > 0 && stage.length > 0 && date.length > 0
-              ? 
-              fetch("https://aki-pinky-backend.herokuapp.com/createDiagnosis", {
-                  method: "POST",
-                  body: JSON.stringify({
-                    name: name,
-                    stage: stage,
-                    date: date,
-                    user_id:user['_id']
-                  }),
+              ? fetch(
+                  "https://aki-pinky-backend.herokuapp.com/createDiagnosis",
+                  {
+                    method: "POST",
+                    body: JSON.stringify({
+                      name: name,
+                      stage: stage,
+                      date: date,
+                      user_id: user["_id"],
+                    }),
 
-                  headers: { "Content-Type": "application/json" },
-                })
+                    headers: { "Content-Type": "application/json" },
+                  }
+                )
                   .then((response) => response.json())
                   .then((data) => {
-                    if (data && data.code == "1")
-                    {
-                        console.log(data)
+                    if (data && data.code == "1") {
+                      console.log(data);
                       dispatch(
-                        
                         createDiagnosis({
                           name: name,
                           stage: stage,
                           date: date,
-                          user_id:user['_id'],
-                          _id:data.data.insertedId
+                          user_id: user["_id"],
+                          _id: data.data.insertedId,
                         })
-
-
-                      );}
-                    else alert(data.message);
+                      );
+                    } else alert(data.message);
                   })
               : alert("please enter all the fields");
           }}
@@ -192,7 +185,16 @@ export function Diagnosis() {
   );
 }
 
+export function SocialBox(){
+    return(
+        <>
+        <h1>Click the link below to join the group</h1>
 
+        <a href="https://chat.whatsapp.com/JT9bTjvfzEQ0yoxdsqT1Ds">Click Here</a>
+        
+        </>
+    )
+}
 
 export default function IndividualComponent() {
   const navigate = useNavigate();

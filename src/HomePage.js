@@ -20,13 +20,16 @@ export default function HomePage() {
     <p className="text-center h2 mb-5 ">Homepage</p>
      <div className=" row justify-content-center shadow-lg "  >
       {homePageArray.map((value, index) => {
+       if(index!=4){
         return (
+          
           <Fragment key={value.title}>
+
             <div className="col-md-4 py-5 m-2 shadow-sm rounded-3 d-flex flex-column justify-content-center align-items-center "
 
             onClick={
               ()=>{
-                
+
                 dispatch(changeMenu(value.title))
 
               navigate('../individual/'+value.title)
@@ -48,6 +51,7 @@ export default function HomePage() {
             {index === 1 && <div className="w-100"></div>}
           </Fragment>
         );
+       }
       })}
     </div>
    </div>

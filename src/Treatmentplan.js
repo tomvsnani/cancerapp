@@ -4,7 +4,7 @@ import { Outlet, Link } from "react-router-dom";
 import homePageArray from "./utilities";
 import { useDispatch, useSelector } from "react-redux";
 
-import { createDiagnosis, changeMenu, clearArray } from "./diagnosisReducer";
+import { createDiagnosis, changeMenu, clearArray, deleteById } from "./diagnosisReducer";
 
 import { useNavigate } from "react-router-dom";
 
@@ -97,6 +97,33 @@ export function TreatmentPlan() {
           return (
             <div className="card p-2 my-4" key={value['_id']}>
               <div className="card-body">
+              <a href="#">
+                  <p
+                    className="fw-bold h5 text-black"
+                    style={{ float: "right" }}
+                    onClick={()=>fetch(
+                      "https://aki-pinky-backend.herokuapp.com/deleteTreatmentplan/" + value._id,
+                      {
+                        method: "DELETE",
+                      }
+                    )
+                      .then((response) => response.json())
+                      .then((data) => {
+                        if (data && data.code == 1) {
+
+                            console.log('deleted successfully')
+
+                            dispatch(deleteById(value._id))
+                        }
+                      }).catch(err=>{
+                        console.log(err)
+                      })
+                    
+                    }
+                  >
+                    x
+                  </p>
+                </a>
                 <p className="card-title fw-bold ">
                   {value.name}{" "}
                   <span className="small ms-3 fw-normal">{value.date1}</span>

@@ -14,7 +14,7 @@ import {Provider} from 'react-redux'
 
 import store from './reduxStore'
 import HomePage from './HomePage';
-import IndividualComponent, { Diagnosis } from './individualComponent';
+import IndividualComponent, { Diagnosis, SocialBox } from './individualComponent';
 import { TreatmentPlan } from './Treatmentplan';
 import { MedicalRecords } from './medicalRecord';
 import { Diet } from './diet';
@@ -58,7 +58,11 @@ const router=createBrowserRouter([{
   ,{
     path:'Diagnosis',
     element:<Diagnosis></Diagnosis>
-  }
+  },
+  {
+    path:'SocialBox',
+    element:<SocialBox></SocialBox>
+  },
 
 ]
 }
